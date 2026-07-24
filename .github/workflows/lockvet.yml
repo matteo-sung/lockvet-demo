@@ -1,0 +1,18 @@
+name: lockvet
+on:
+  pull_request:
+    paths:
+      - '**/package-lock.json'
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  lockvet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: matteo-sung/lockvet@v0.1.0
