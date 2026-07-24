@@ -16,6 +16,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: matteo-sung/lockvet@v0.1.15
+      - uses: matteo-sung/lockvet@v0.1.16
         with:
           sarif: 'true' 
