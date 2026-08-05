@@ -18,4 +18,5 @@ jobs:
           fetch-depth: 0
       - uses: matteo-sung/lockvet@v0.3.2
         with:
-          sarif: 'true' 
+          sarif: 'true'
+          changelogs: 'true' 
