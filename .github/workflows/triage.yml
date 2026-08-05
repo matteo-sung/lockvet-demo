@@ -1,0 +1,35 @@
+name: dependency triage
+on:
+  schedule:
+    - cron: '0 8 * * 1'   # every Monday morning
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install lockvet
+        run: curl -fsSL https://raw.githubusercontent.com/matteo-sung/lockvet/main/install.sh | sh -s -- -b /usr/local/bin -v v0.2.0
+      - name: Build triage table
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          lockvet queue "$GITHUB_REPOSITORY" -author any -md > queue.md
+          echo >> queue.md
+          echo "_Refreshed weekly by [lockvet](https://github.com/matteo-sung/lockvet). Run \`lockvet pr <url>\` on any row for the full report._" >> queue.md
+      - name: Create or update the triage issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Dependency PR triage"
+          n=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+                --search "in:title \"$title\"" --json number --jq '.[0].number')
+          if [ -n "$n" ]; then
+            gh issue edit "$n" --repo "$GITHUB_REPOSITORY" --body-file queue.md
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file queue.md
+          fi
